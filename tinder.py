@@ -10,19 +10,22 @@ async def start(update, context):
 
 async def message_confirm(update, context):
     text = update.message.text
+    username = update.message.from_user.username
     messages[len(messages)] = text
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Ого, скоро мы это опубликуем анонимно.")
     keyboard = [
-        [InlineKeyboardButton(text='Подтвердить', callback_data=f"approve_{len(messages)-1}")]
+        [InlineKeyboardButton(text='Подтвердить', callback_data=f"approve_{len(messages)-1}_{username}")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await context.bot.send_message(chat_id=8294463277, text=messages[len(messages)-1], reply_markup=reply_markup)
+    message_text = f"""Сообщение от @{username}\n{messages[len(messages)-1]}"""
+    await context.bot.send_message(chat_id=8294463277, text=message_text, reply_markup=reply_markup)
 
 async def handle_confirm(update, context):
     query = update.callback_query
     d = query.data.split('_')
     print(d)
     if d[0] == "approve":
+
         await context.bot.send_message(chat_id="@vctenax_mfua", text=messages[int(d[1])])
 
 def main():
